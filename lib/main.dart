@@ -8,11 +8,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Product App',
+      title: 'Details ',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ProductPage(),
+      home: ProductDetailPage(),
     );
   }
 }
@@ -22,103 +22,190 @@ class Product {
   final String description;
   final String imageUrl;
   final double price;
+  final double rating;
 
   Product({
     required this.name,
     required this.description,
     required this.imageUrl,
     required this.price,
+    required this.rating,
   });
 }
 
-class ProductPage extends StatelessWidget {
-  final List<Product> products = [
-    Product(
-      name: 'Product 1',
-      description: 'This is the description for product 1',
-      imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNgYbGGU5wePzsNSmmyFtWHJjlkxnp7GAoQg&s',
-      price: 29.99,
-    ),
-    Product(
-      name: 'Product 2',
-      description: 'This is the description for product 2',
-      imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNgYbGGU5wePzsNSmmyFtWHJjlkxnp7GAoQg&s',
-      price: 39.99,
-    ),
-    Product(
-      name: 'Product 3',
-      description: 'This is the description for product 3',
-      imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNgYbGGU5wePzsNSmmyFtWHJjlkxnp7GAoQg&s',
-      price: 49.99,
-    ),
-  ];
+class ProductDetailPage extends StatefulWidget {
+  @override
+  _ProductDetailPageState createState() => _ProductDetailPageState();
+}
+
+class _ProductDetailPageState extends State<ProductDetailPage> {
+  // Sample product
+  final Product product = Product(
+    name: 'copule watch',
+    description:
+        'This is a beautiful watch. the black colour is eligent. It is a high-quality product that offers amazing features for the price.',
+    imageUrl: 'https://retailbd.com/wp-content/uploads/2018/08/BY51K.jpg',
+    price: 29.99,
+    rating: 4.5,
+  );
+
+  // Cart list to keep track of added products
+  List<Product> cart = [];
+
+  // Function to add product to cart
+  void addToCart(Product product) {
+    setState(() {
+      cart.add(product);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('${product.name} added to cart!'),
+    ));
+  }
+
+  // Function to handle "Buy Now" action
+  void buyNow(Product product) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Proceeding to checkout for ${product.name}'),
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Products'),
-      ),
-      body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-        ),
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          return ProductCard(product: products[index]);
-        },
-      ),
-    );
-  }
-}
-
-class ProductCard extends StatelessWidget {
-  final Product product;
-
-  ProductCard({required this.product});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 5.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Column(
-        children: [
-          Image.network(
-            product.imageUrl,
-            height: 100,
-            width: 100,
-            fit: BoxFit.cover,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              product.name,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(
-              product.description,
-              style: TextStyle(fontSize: 14),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
-            ),
-          ),
-          Spacer(),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              '\$${product.price}',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+        title: Text('Product Detail'),
+        actions: [
+          // Cart button in the app bar, showing number of items in the cart
+          IconButton(
+            icon: Icon(Icons.shopping_cart),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Your Cart"),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (cart.isEmpty)
+                          Text("Your cart is empty.")
+                        else
+                          Column(
+                            children: cart
+                                .map((product) => Text(product.name))
+                                  .toList(),
+                          )
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text("Close"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
           ),
         ],
       ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Product Image
+            Image.network(
+              product.imageUrl,
+              height: 250,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+            SizedBox(height: 16),
+
+            // Product Name
+            Text(
+              product.name,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8),
+
+            // Product Rating
+            Row(
+              children: [
+                Icon(Icons.star, color: Colors.orange, size: 20),
+                SizedBox(width: 4),
+                Text(
+                  '${product.rating} / 5.0',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+
+            // Product Price
+            Text(
+              '\$${product.price}',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+            SizedBox(height: 16),
+
+            // Product Description
+            Text(
+              product.description,
+              style: TextStyle(fontSize: 16),
+            ),
+            Spacer(),
+
+            // Action Buttons (Buy Now & Add to Cart)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Buy Now Button
+                ElevatedButton(
+                  onPressed: () {
+                    buyNow(product);
+                  },
+                  child: Text('Buy Now'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 20),
+
+                // Add to Cart Button
+                ElevatedButton(
+                  onPressed: () {
+                    addToCart(product);
+                  },
+                  child: Text('Add to Cart'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
+
 
