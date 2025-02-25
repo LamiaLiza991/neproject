@@ -12,17 +12,61 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Image Gallery with Drawer'),
+        ),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Text(
+                  'Drawer Header',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: const Text('Item 1'),
+                onTap: () {
+                  // Handle tap on Item 1
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('Item 2'),
+                onTap: () {
+                  // Handle tap on Item 2
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('Item 3'),
+                onTap: () {
+                  // Handle tap on Item 3
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        ),
         body: SingleChildScrollView(
-            child: Column(
-          children: [
-            Image.network(
-                "https://retailbd.com/wp-content/uploads/2018/08/BY51K.jpg"),
-            Image.network(
-                "https://cdn4.ethoswatches.com/the-watch-guide/wp-content/uploads/2017/11/couple-watches-men-women-prices-wedding-season-shopping-1.jpg"),
-                Image.network(
-                "https://frederiqueconstant.com/wp-content/uploads/images/Watch-Angels-1920x1080-1.jpg"),
-          ],
-        )),
+          child: Column(
+            children: [
+              Image.network(
+                  "https://media.istockphoto.com/id/1263070782/photo/beautiful-mist-over-green-forest-on-mountain.jpg?s=612x612&w=0&k=20&c=QTI2fAeNTUYiUs7g4BK38_zPMuPC4GyyYV4Sys7LBb4="),
+              Image.network(
+                  "https://media.istockphoto.com/id/1186837330/photo/rainforest-valley.jpg?s=612x612&w=0&k=20&c=NCAOR1y9eLW8nCH8nrqNpcqwvWmegTuN5rSCN4cZDg8="),
+              Image.network(
+                  "https://media.istockphoto.com/id/1388206034/photo/landscape-of-the-mist-covered-mountain-in-the-morning-with-warmed-sun-beams-for-background.jpg?s=612x612&w=0&k=20&c=uiBi3iHngIMIgmpUjSX_uhdH-z9jHK5EjOG1TzZpOpE="),
+            ],
+          ),
+        ),
       ),
     );
   }
