@@ -1,22 +1,22 @@
 <?php
+session_start();
 $conn = new mysqli("localhost", "root", "", "user_db");
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
 $username = $_POST['username'];
-$email = $_POST['email'];
-$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+$password = $_POST['password'];
 
-$sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+$sql = "SELECT * FROM users WHERE username = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("sss", $username, $password, $email);
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 
-if ($stmt->execute()) {
-    echo "Registration successful! <a href='login.html'>Login here</a>";
+if ($user && password_verify($password, $user['password'])) {
+    $_SESSION['username'] = $user['username'];
+    header("Location: dashboard.php");
 } else {
-    echo "Error: " . $stmt->error;
+    echo "Invalid login!";
 }
 
 $stmt->close();
